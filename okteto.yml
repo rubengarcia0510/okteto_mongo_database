@@ -1,15 +1,18 @@
 build:
-  catalog:
-    context: catalog
+  backendReactive:
+    image: okteto.dev/java-maven-backendReactive:1.2.2-SNAPSHOT
+    context: .
 deploy:
   - name: Deploy MongoDB
     command:  helm upgrade --install mongodb mongodb/mongodb-12.1.30.tgz -f mongodb/values.yml --version 12.1.30
-  - name: Deploy Catalog
-    command: helm upgrade --install catalog catalog/chart --set image=${OKTETO_BUILD_CATALOG_IMAGE}
+  - kubectl apply -f k8s.yml
 dev:
-  catalog:
-    command: yarn start
+  backendReactive:
+    image: okteto/maven:3
+    command: bash
     sync:
-      - catalog:/src
+      - .:/usr/src/app
     forward:
-      - 9229:9229
+      - 5005:5005
+    volumes:
+      - /root/.m2
