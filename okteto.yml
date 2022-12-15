@@ -1,3 +1,15 @@
+build:
+  catalog:
+    context: catalog
 deploy:
   - name: Deploy MongoDB
     command:  helm upgrade --install mongodb mongodb/mongodb-12.1.30.tgz -f mongodb/values.yml --version 12.1.30
+  - name: Deploy Catalog
+    command: helm upgrade --install catalog catalog/chart --set image=${OKTETO_BUILD_CATALOG_IMAGE}
+dev:
+  catalog:
+    command: yarn start
+    sync:
+      - catalog:/src
+    forward:
+      - 9229:9229
